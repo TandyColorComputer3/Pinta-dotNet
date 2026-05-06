@@ -326,7 +326,18 @@ public sealed class ViewActions
 		string text = ZoomComboBox.ComboBox.GetActiveText ()!;
 
 		if (!TryParsePercent (text, out var percent)) {
-			ZoomComboBox.ComboBox.GetEntry ().SetText (temp_zoom!);
+			// Avoid re-entrancy into GtkEditable insert/change handlers by deferring
+			// text restoration until the current event finishes processing.
+			string restore = temp_zoom ?? ToPercent (workspace.Scale);
+			GLib.Functions.IdleAdd (0, () => {
+				SuspendZoomUpdate ();
+				try {
+					ZoomComboBox.ComboBox.GetEntry ().SetText (restore);
+				} finally {
+					ResumeZoomUpdate ();
+				}
+				return false;
+			});
 			return;
 		}
 
