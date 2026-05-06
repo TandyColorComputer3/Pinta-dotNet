@@ -99,6 +99,11 @@ if [ "$skip_signing" = "false" ]; then
 
     # Sign the main executable and .NET stuff.
     run_codesign ${MAC_APP_DIR}
+else
+    # Even for unsigned distribution builds, we need a valid ad-hoc signature
+    # because install_name_tool modified the main executable.
+    echo "Ad-hoc signing (unsigned build mode)..."
+    codesign --deep --force --sign - ${MAC_APP_DIR}
 fi
 
 # Create the .dmg image, and include a link to drag the app into /Applications
