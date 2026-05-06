@@ -120,11 +120,11 @@
 	<key>CFBundleIconFile</key>
 	<string>pinta.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.ximian.pinta</string>
+	<string>io.github.TandyColorComputer3.PintaDotNet</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Pinta</string>
+	<string>Pinta.NET</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

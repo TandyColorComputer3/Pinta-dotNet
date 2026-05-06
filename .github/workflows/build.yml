@@ -119,7 +119,13 @@ jobs:
     - name: Build Installer
       if: github.event_name != 'pull_request'
       env:
-        MAC_DEV_PASSWORD: ${{ secrets.MAC_DEV_PASSWORD }}
+        APP_NAME: Pinta.NET
+        APP_BUNDLE_ID: io.github.TandyColorComputer3.PintaDotNet
+        DMG_BASENAME: PintaDotNet
+        MAC_CODESIGN_IDENTITY: ${{ secrets.MAC_CODESIGN_IDENTITY }}
+        MAC_NOTARY_APPLE_ID: ${{ secrets.MAC_NOTARY_APPLE_ID }}
+        MAC_NOTARY_TEAM_ID: ${{ secrets.MAC_NOTARY_TEAM_ID }}
+        MAC_NOTARY_PASSWORD: ${{ secrets.MAC_DEV_PASSWORD }}
       run: |
         cd installer/macos
         ./build_installer.sh ${{matrix.build.dotnet_rid}}
@@ -128,8 +134,8 @@ jobs:
       if: github.event_name != 'pull_request'
       uses: actions/upload-artifact@v7
       with:
-        name: "Pinta-${{matrix.build.dotnet_rid}}.dmg"
-        path: installer/macos/Pinta.dmg
+        name: "PintaDotNet-${{matrix.build.dotnet_rid}}.dmg"
+        path: installer/macos/PintaDotNet-${{matrix.build.dotnet_rid}}.dmg
         if-no-files-found: error
 
   build-windows:

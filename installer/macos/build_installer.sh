@@ -1,6 +1,17 @@
 #!/bin/sh
 set -e
 
+APP_NAME="${APP_NAME:-Pinta.NET}"
+APP_EXECUTABLE="${APP_EXECUTABLE:-Pinta}"
+APP_BUNDLE_ID="${APP_BUNDLE_ID:-io.github.TandyColorComputer3.PintaDotNet}"
+APP_VERSION="${APP_VERSION:-3.2}"
+APP_ICON_FILE="${APP_ICON_FILE:-pinta.icns}"
+DMG_BASENAME="${DMG_BASENAME:-PintaDotNet}"
+MAC_CODESIGN_IDENTITY="${MAC_CODESIGN_IDENTITY:-Developer ID Application: Cameron White (D5G6C56TBH)}"
+MAC_NOTARY_APPLE_ID="${MAC_NOTARY_APPLE_ID:-cameronwhite91@gmail.com}"
+MAC_NOTARY_PASSWORD="${MAC_NOTARY_PASSWORD:-${MAC_DEV_PASSWORD}}"
+MAC_NOTARY_TEAM_ID="${MAC_NOTARY_TEAM_ID:-D5G6C56TBH}"
+
 # Parse command line arguments
 skip_signing=false
 runtimeid=""
@@ -24,18 +35,20 @@ if [ "$runtimeid" != "osx-x64" ] && [ "$runtimeid" != "osx-arm64" ]; then
     exit 1
 fi
 
-MAC_APP_DIR="$PWD/package/Pinta.app"
+MAC_APP_DIR="$PWD/package/${APP_NAME}.app"
 MAC_APP_BIN_DIR="${MAC_APP_DIR}/Contents/MacOS/"
 MAC_APP_RESOURCE_DIR="${MAC_APP_DIR}/Contents/Resources/"
 MAC_APP_SHARE_DIR="${MAC_APP_RESOURCE_DIR}/share"
+DMG_PATH="${DMG_BASENAME}-${runtimeid}.dmg"
 
 GTK_UPDATE_ICON_CACHE="$(brew --prefix gtk4)/bin/gtk4-update-icon-cache -f"
+PLIST_BUDDY="/usr/libexec/PlistBuddy"
 
 run_codesign()
 {
     file=$1
     echo ${file}
-    codesign --deep --force --timestamp --options runtime --sign "Developer ID Application: Cameron White (D5G6C56TBH)" --entitlements entitlements.plist ${file}
+    codesign --deep --force --timestamp --options runtime --sign "${MAC_CODESIGN_IDENTITY}" --entitlements entitlements.plist ${file}
 }
 
 mkdir -p ${MAC_APP_BIN_DIR} ${MAC_APP_RESOURCE_DIR} ${MAC_APP_SHARE_DIR}
@@ -52,13 +65,23 @@ mv ${MAC_APP_BIN_DIR}/icons ${MAC_APP_SHARE_DIR}/icons
 cp hicolor.index.theme ${MAC_APP_SHARE_DIR}/icons/hicolor/index.theme
 
 cp Info.plist ${MAC_APP_DIR}/Contents
-cp pinta.icns ${MAC_APP_DIR}/Contents/Resources
+${PLIST_BUDDY} -c "Set :CFBundleIdentifier ${APP_BUNDLE_ID}" ${MAC_APP_DIR}/Contents/Info.plist
+${PLIST_BUDDY} -c "Set :CFBundleName ${APP_NAME}" ${MAC_APP_DIR}/Contents/Info.plist
+${PLIST_BUDDY} -c "Set :CFBundleShortVersionString ${APP_VERSION}" ${MAC_APP_DIR}/Contents/Info.plist
+${PLIST_BUDDY} -c "Set :CFBundleVersion ${APP_VERSION}" ${MAC_APP_DIR}/Contents/Info.plist
+${PLIST_BUDDY} -c "Set :CFBundleExecutable ${APP_EXECUTABLE}" ${MAC_APP_DIR}/Contents/Info.plist
+
+if [ -f "${APP_ICON_FILE}" ]; then
+    cp "${APP_ICON_FILE}" "${MAC_APP_RESOURCE_DIR}/"
+else
+    echo "Warning: ${APP_ICON_FILE} not found; continuing with generic app icon."
+fi
 
 # Install the GTK dependencies.
 echo "Bundling GTK..."
 ./bundle_gtk.py --runtime $runtimeid --resource_dir ${MAC_APP_RESOURCE_DIR}
 # Add the GTK lib dir to the library search path (for dlopen()), as an alternative to $DYLD_LIBRARY_PATH.
-install_name_tool -add_rpath "@executable_path/../Resources/lib" ${MAC_APP_BIN_DIR}/Pinta
+install_name_tool -add_rpath "@executable_path/../Resources/lib" ${MAC_APP_BIN_DIR}/${APP_EXECUTABLE}
 
 # Generate the icon theme cache.
 ${GTK_UPDATE_ICON_CACHE} ${MAC_APP_SHARE_DIR}/icons/hicolor
@@ -81,17 +104,21 @@ fi
 # Create the .dmg image, and include a link to drag the app into /Applications
 echo "Creating dmg..."
 ln -s /Applications package/Applications
-hdiutil create -quiet -srcFolder package -volname "Pinta Installer" -o Pinta.dmg
+hdiutil create -quiet -srcFolder package -volname "${APP_NAME} Installer" -o ${DMG_PATH}
 
 if [ "$skip_signing" = "false" ]; then
     # Sign the .dmg image
-    run_codesign Pinta.dmg
+    run_codesign ${DMG_PATH}
 
     # Notarize
     echo "Notarizing..."
-    xcrun notarytool submit --wait --apple-id=cameronwhite91@gmail.com --password ${MAC_DEV_PASSWORD} --team-id D5G6C56TBH Pinta.dmg
+    if [ -z "${MAC_NOTARY_PASSWORD}" ]; then
+        echo "Missing notarization password. Set MAC_NOTARY_PASSWORD (or MAC_DEV_PASSWORD)."
+        exit 1
+    fi
+    xcrun notarytool submit --wait --apple-id=${MAC_NOTARY_APPLE_ID} --password ${MAC_NOTARY_PASSWORD} --team-id ${MAC_NOTARY_TEAM_ID} ${DMG_PATH}
 
     # Staple the result to the dmg
     echo "Stapling..."
-    xcrun stapler staple Pinta.dmg
+    xcrun stapler staple ${DMG_PATH}
 fi
