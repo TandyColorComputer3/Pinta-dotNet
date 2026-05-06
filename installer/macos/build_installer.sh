@@ -51,6 +51,13 @@ run_codesign()
     codesign --deep --force --timestamp --options runtime --sign "${MAC_CODESIGN_IDENTITY}" --entitlements entitlements.plist ${file}
 }
 
+run_adhoc_codesign()
+{
+    file=$1
+    echo ${file}
+    codesign --force --sign - ${file}
+}
+
 mkdir -p ${MAC_APP_BIN_DIR} ${MAC_APP_RESOURCE_DIR} ${MAC_APP_SHARE_DIR}
 
 dotnet publish ../../Pinta/Pinta.csproj -p:PublishDir=${MAC_APP_BIN_DIR} -p:BuildTranslations=true -c Release -r $runtimeid --self-contained true
@@ -100,9 +107,17 @@ if [ "$skip_signing" = "false" ]; then
     # Sign the main executable and .NET stuff.
     run_codesign ${MAC_APP_DIR}
 else
-    # Even for unsigned distribution builds, we need a valid ad-hoc signature
-    # because install_name_tool modified the main executable.
+    # Even for unsigned distribution builds, we need valid ad-hoc signatures
+    # for all native code loaded by dyld / dlopen at runtime.
     echo "Ad-hoc signing (unsigned build mode)..."
+    for lib in `find ${MAC_APP_RESOURCE_DIR} -name \*.dylib -or -name \*.so`
+    do
+        run_adhoc_codesign ${lib}
+    done
+    for lib in `find ${MAC_APP_BIN_DIR} -name \*.dylib`
+    do
+        run_adhoc_codesign ${lib}
+    done
     codesign --deep --force --sign - ${MAC_APP_DIR}
 fi
 
