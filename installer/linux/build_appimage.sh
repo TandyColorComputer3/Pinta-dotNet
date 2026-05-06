@@ -1,0 +1,53 @@
+#!/bin/sh
+set -e
+
+APP_NAME="${APP_NAME:-PintaDotNet}"
+APP_DISPLAY_NAME="${APP_DISPLAY_NAME:-Pinta.NET}"
+APP_ID="${APP_ID:-io.github.TandyColorComputer3.PintaDotNet}"
+RUNTIME_ID="${RUNTIME_ID:-linux-x64}"
+BUILD_CONFIGURATION="${BUILD_CONFIGURATION:-Release}"
+VERSION="${VERSION:-0.1}"
+ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+WORK_DIR="${ROOT_DIR}/release-appimage"
+APPDIR="${WORK_DIR}/${APP_NAME}.AppDir"
+PUBLISH_DIR="${WORK_DIR}/publish"
+OUTPUT_FILE="${ROOT_DIR}/${APP_NAME}-${VERSION}-${RUNTIME_ID}.AppImage"
+DESKTOP_TEMPLATE="${ROOT_DIR}/xdg/${APP_ID}.desktop.in"
+
+rm -rf "${WORK_DIR}" "${OUTPUT_FILE}"
+mkdir -p "${APPDIR}/usr/bin" "${APPDIR}/usr/share/applications" "${APPDIR}/usr/share/icons/hicolor/scalable/apps"
+
+dotnet publish "${ROOT_DIR}/Pinta/Pinta.csproj" \
+  -c "${BUILD_CONFIGURATION}" \
+  -r "${RUNTIME_ID}" \
+  --self-contained true \
+  -p:BuildTranslations=true \
+  -p:PublishDir="${PUBLISH_DIR}"
+
+cp -R "${PUBLISH_DIR}/." "${APPDIR}/usr/bin/"
+
+cp "${DESKTOP_TEMPLATE}" "${APPDIR}/${APP_ID}.desktop"
+cp "${DESKTOP_TEMPLATE}" "${APPDIR}/usr/share/applications/${APP_ID}.desktop"
+sed -i "s/^Exec=.*/Exec=Pinta/" "${APPDIR}/${APP_ID}.desktop"
+sed -i "s/^Exec=.*/Exec=Pinta/" "${APPDIR}/usr/share/applications/${APP_ID}.desktop"
+sed -i "s/^TryExec=.*/TryExec=Pinta/" "${APPDIR}/${APP_ID}.desktop"
+sed -i "s/^TryExec=.*/TryExec=Pinta/" "${APPDIR}/usr/share/applications/${APP_ID}.desktop"
+
+cp "${ROOT_DIR}/Pinta.Resources/icons/hicolor/scalable/apps/${APP_ID}.svg" "${APPDIR}/${APP_ID}.svg"
+cp "${ROOT_DIR}/Pinta.Resources/icons/hicolor/scalable/apps/${APP_ID}.svg" "${APPDIR}/usr/share/icons/hicolor/scalable/apps/${APP_ID}.svg"
+ln -sf "${APP_ID}.svg" "${APPDIR}/.DirIcon"
+
+cat > "${APPDIR}/AppRun" <<'EOF'
+#!/bin/sh
+HERE="$(dirname "$(readlink -f "$0")")"
+exec "${HERE}/usr/bin/Pinta" "$@"
+EOF
+chmod +x "${APPDIR}/AppRun"
+
+APPIMAGETOOL="${WORK_DIR}/appimagetool.AppImage"
+curl -fsSL "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage" -o "${APPIMAGETOOL}"
+chmod +x "${APPIMAGETOOL}"
+
+ARCH=x86_64 "${APPIMAGETOOL}" --appimage-extract-and-run "${APPDIR}" "${OUTPUT_FILE}"
+
+echo "Built ${OUTPUT_FILE}"

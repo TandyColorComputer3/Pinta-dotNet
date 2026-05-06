@@ -72,12 +72,16 @@ jobs:
       run: make install
     - name: Build Installer
       working-directory: ${{env.BUILD_DIR}}
-      run: make releasezip
+      env:
+        VERSION: ${{ env.PINTA_VERSION }}
+      run: |
+        chmod +x installer/linux/build_appimage.sh
+        installer/linux/build_appimage.sh
     - name: Upload Installer
       uses: actions/upload-artifact@v7
       with:
-        name: Pinta-linux-dotnet-${{matrix.dotnet_version}}.zip
-        path: ${{env.BUILD_DIR}}/pinta-${{env.PINTA_VERSION}}.zip
+        name: PintaDotNet-linux-dotnet-${{matrix.dotnet_version}}.AppImage
+        path: ${{env.BUILD_DIR}}/PintaDotNet-${{env.PINTA_VERSION}}-linux-x64.AppImage
         if-no-files-found: error
 
   build-macos:
@@ -184,8 +188,8 @@ jobs:
       id: upload-unsigned-installer
       uses: actions/upload-artifact@v7
       with:
-        name: "Pinta-${{matrix.build.dotnet_rid}}.exe"
-        path: installer/windows/Pinta.exe
+        name: "PintaDotNet-${{matrix.build.dotnet_rid}}.exe"
+        path: installer/windows/*.exe
         if-no-files-found: error
 
     # Only enable signing for tagged releases.
@@ -207,7 +211,7 @@ jobs:
       id: upload-signed-installer
       uses: actions/upload-artifact@v7
       with:
-        name: "Pinta-signed-${{matrix.build.dotnet_rid}}.exe"
-        path: ./signed-artifacts/Pinta.exe
+        name: "PintaDotNet-signed-${{matrix.build.dotnet_rid}}.exe"
+        path: ./signed-artifacts/*.exe
         if-no-files-found: error
 
