@@ -52,9 +52,6 @@ internal sealed class MainWindow
 	public MainWindow (Adw.Application app)
 	{
 		this.app = app;
-
-		// Set the human-readable application name, used by e.g. gtk_recent_manager_add_item().
-		GLib.Functions.SetApplicationName (Translations.GetString ("Pinta"));
 	}
 
 	/// <summary>
@@ -318,7 +315,7 @@ internal sealed class MainWindow
 				extension.Initialize ();
 			} catch (Exception e) {
 				// Translators: {0} is the name of an add-in.
-				string body = Translations.GetString ("The '{0}' add-in may not be compatible with this version of Pinta", args.ExtensionNode.Addin.Id);
+				string body = Translations.GetString ("The '{0}' add-in may not be compatible with this version of Pinta.NET", args.ExtensionNode.Addin.Id);
 				_ = PintaCore.Chrome.ShowErrorDialog (
 					PintaCore.Chrome.MainWindow,
 					Translations.GetString ("Failed to initialize add-in"),
@@ -342,7 +339,7 @@ internal sealed class MainWindow
 		window_shell = new WindowShell (
 			app,
 			"Pinta.GenericWindow",
-			"Pinta",
+			PintaCore.ApplicationDisplayName,
 			width,
 			height,
 			useMenuBar: IsUsingMenuBar (),

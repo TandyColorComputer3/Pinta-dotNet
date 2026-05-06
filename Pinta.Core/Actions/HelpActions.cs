@@ -43,26 +43,26 @@ public sealed class HelpActions
 	{
 		Contents = new Command (
 			"contents",
-			Translations.GetString ("Contents"),
+			Translations.GetString ("User guide (legacy Pinta)"),
 			null,
 			Resources.StandardIcons.HelpBrowser,
 			shortcuts: ["F1"]);
 
 		Website = new Command (
 			"website",
-			Translations.GetString ("Pinta Website"),
+			Translations.GetString ("Pinta.NET on GitHub"),
 			null,
 			Resources.Icons.HelpWebsite);
 
 		Bugs = new Command (
 			"bugs",
-			Translations.GetString ("File a Bug"),
+			Translations.GetString ("Report a Pinta.NET Issue"),
 			null,
 			Resources.Icons.HelpBug);
 
 		Translate = new Command (
 			"translate",
-			Translations.GetString ("Translate This Application"),
+			Translations.GetString ("Translate original Pinta"),
 			null,
 			Resources.Icons.HelpTranslate);
 
@@ -104,12 +104,12 @@ public sealed class HelpActions
 
 	private async void Bugs_Activated (object sender, EventArgs e)
 	{
-		await system.LaunchUri ("https://github.com/PintaProject/Pinta/issues");
+		await system.LaunchUri (PintaCore.ForkIssuesUrl);
 	}
 
 	private async void DisplayHelp (object sender, EventArgs e)
 	{
-		await system.LaunchUri ("https://pinta-project.com/user-guide");
+		await system.LaunchUri (PintaCore.LegacyPintaUserGuideUrl);
 	}
 
 	private async void Translate_Activated (object sender, EventArgs e)
@@ -119,6 +119,6 @@ public sealed class HelpActions
 
 	private async void Website_Activated (object sender, EventArgs e)
 	{
-		await system.LaunchUri ("https://www.pinta-project.com");
+		await system.LaunchUri (PintaCore.ForkHomepageUrl);
 	}
 }

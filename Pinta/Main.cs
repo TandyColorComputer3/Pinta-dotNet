@@ -68,7 +68,7 @@ internal sealed class MainClass
 		};
 
 		// Note the implicit '--version' argument uses the InformationalVersion from the assembly.
-		var root_command = new RootCommand (Translations.GetString ("Pinta"));
+		var root_command = new RootCommand (PintaCore.ApplicationDisplayName);
 		root_command.Options.Add (threads_option);
 		root_command.Arguments.Add (files_arg);
 		root_command.Options.Add (debug_option);
@@ -87,6 +87,8 @@ internal sealed class MainClass
 	private static void OpenMainWindow (int threads, IEnumerable<string> files, bool debug, string locale_dir)
 	{
 		GLib.UnhandledException.SetHandler (OnUnhandledException);
+
+		ApplicationIdentity.ApplyBeforeGtkInit ();
 
 		Gsk.Module.Initialize ();
 		Pango.Module.Initialize ();

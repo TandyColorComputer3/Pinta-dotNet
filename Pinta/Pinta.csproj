@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <AssemblyTitle>Pinta.NET</AssemblyTitle>
+    <Title>Pinta.NET</Title>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationIcon>Pinta.ico</ApplicationIcon>
     <OutputPath>..\build\bin</OutputPath>

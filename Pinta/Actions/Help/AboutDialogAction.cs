@@ -61,25 +61,25 @@ internal sealed class AboutDialogAction : IActionHandler
 	{
 		using Adw.AboutWindow dialog = Adw.AboutWindow.New ();
 		dialog.TransientFor = chrome.MainWindow;
-		dialog.Title = Translations.GetString ("About Pinta");
-		dialog.ApplicationName = Translations.GetString ("Pinta");
+		dialog.Title = Translations.GetString ("About Pinta.NET");
+		dialog.ApplicationName = PintaCore.ApplicationDisplayName;
 		dialog.ApplicationIcon = Icons.Pinta;
 		dialog.Version = application_version;
-		dialog.Website = "https://www.pinta-project.com";
-		dialog.Comments = Translations.GetString ("Easily create and edit images");
+		dialog.Website = PintaCore.ForkHomepageUrl;
+		dialog.Comments = Translations.GetString ("Pinta.NET is a community fork of Pinta with a reimagined user interface. It is not the official Pinta application.\n\nReport bugs and ask for help only via the Pinta.NET project (see Help). Do not use the upstream Pinta issue tracker or forums for this program.\n\nEasily create and edit images.");
 		dialog.Copyright = BuildCopyrightText ();
 		dialog.License = BuildLicenseText ();
 		dialog.Developers = authors;
 		dialog.TranslatorCredits = Translations.GetString ("translator-credits");
-		dialog.IssueUrl = "https://github.com/PintaProject/Pinta/issues";
-		dialog.SupportUrl = "https://github.com/PintaProject/Pinta/discussions";
+		dialog.IssueUrl = PintaCore.ForkIssuesUrl;
+		dialog.SupportUrl = PintaCore.ForkDiscussionsUrl;
 		await dialog.PresentAsync ();
 	}
 
 	private static string BuildCopyrightText ()
 	{
 		string copyrightText = Translations.GetString ("Copyright");
-		string contributorsText = Translations.GetString ("by Pinta contributors");
+		string contributorsText = Translations.GetString ("by Pinta contributors; Pinta.NET fork");
 		return $"{copyrightText} (c) 2010-2026 {contributorsText}";
 	}
 
@@ -87,6 +87,8 @@ internal sealed class AboutDialogAction : IActionHandler
 	{
 		StringBuilder sb = new ();
 
+		sb.AppendLine (Translations.GetString ("Pinta.NET is an independent fork based on the open source Pinta codebase. It is not produced or endorsed by the upstream Pinta project."));
+		sb.AppendLine ();
 		sb.AppendFormat ("{0}:\n", Translations.GetString ("License"));
 		sb.AppendLine (Translations.GetString ("Released under the MIT X11 License."));
 		sb.AppendLine ();

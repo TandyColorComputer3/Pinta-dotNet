@@ -1,8 +1,12 @@
 
-# Pinta - [Simple Gtk# Paint Program](http://pinta-project.com/)
+# Pinta.NET
 
-<a href='https://flathub.org/apps/com.github.PintaProject.Pinta'><img width='200' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/></a>
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/pinta)
+**Pinta.NET** is a community fork of [Pinta](http://pinta-project.com/), with distinct branding and a reimagined user interface.  
+It is **not** the official Pinta application — **please do not report Pinta.NET bugs or ask for support on [upstream Pinta](https://github.com/PintaProject/Pinta)**.
+
+Project home / issues / discussions: [github.com/TandyColorComputer3/Pinta-dotNet](https://github.com/TandyColorComputer3/Pinta-dotNet)
+
+Upstream badges (official Pinta only — omit or replace if you distribute this fork):
 
 [![Translation status](https://hosted.weblate.org/widget/pinta/pinta/287x66-grey.png)](https://hosted.weblate.org/engage/pinta/)
 [![Build Status](https://github.com/PintaProject/Pinta/workflows/Build/badge.svg)](https://github.com/PintaProject/Pinta/actions)
@@ -82,16 +86,18 @@ For building on the command line:
 
 Follow the instructions of the corresponding [pinta-virtual-dev-environment](https://github.com/janrothkegel/pinta-virtual-dev-environment) project
 
-## Getting help / contributing:
+## Getting help / contributing (Pinta.NET)
 
-- You can get [technical help](https://github.com/PintaProject/Pinta/discussions).
-- You can report [bugs/issues](https://github.com/PintaProject/Pinta/issues).
-- You can make [suggestions](https://github.com/PintaProject/Pinta/discussions/categories/ideas).
-- You can help [translate Pinta to your native language](https://hosted.weblate.org/engage/pinta/).
-- You can fork the project on [Github](https://github.com/PintaProject/Pinta).
-- You can get help in #pinta on irc.gnome.org.
-- For details on notable changes of each release, take a look at the [CHANGELOG](https://github.com/PintaProject/Pinta/blob/master/CHANGELOG.md).
-- For details on patching, take a look at `patch-guidelines.md` in the repo.
+Use **this repository** only for Pinta.NET support:
+
+- Questions and discussion: [Pinta.NET discussions](https://github.com/TandyColorComputer3/Pinta-dotNet/discussions)
+- Bugs / issues: [Pinta.NET issues](https://github.com/TandyColorComputer3/Pinta-dotNet/issues)
+
+The [legacy user guide](https://pinta-project.com/user-guide) still describes core features inherited from upstream Pinta; behavior in Pinta.NET may differ.
+
+- To contribute translations upstream (original **Pinta** project): [Weblate — Pinta](https://hosted.weblate.org/engage/pinta/)
+- IRC: `#pinta` on irc.gnome.org historically targets **upstream** Pinta developers.
+- For changes in **this fork**, see [CHANGELOG.md](CHANGELOG.md) in this repo and `patch-guidelines.md`.
 
 ## Code signing policy
 - Free code signing on Windows provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).

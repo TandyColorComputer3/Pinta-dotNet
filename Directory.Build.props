@@ -8,9 +8,9 @@
     <Version>3.2.0.0</Version>
     <!-- User-facing version number, used for the version command line argument -->
     <InformationalVersion>3.2</InformationalVersion>
-    <Authors>PintaProject</Authors>
+    <Authors>Pinta.NET contributors (fork of Pinta)</Authors>
     <Company />
-    <Product />
+    <Product>Pinta.NET</Product>
 
     <!-- Add an absolute path to a local GirCore source directory to use it instead of the NuGet package -->
     <GirCoreSource />

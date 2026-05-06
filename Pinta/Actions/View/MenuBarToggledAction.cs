@@ -36,8 +36,8 @@ internal sealed class MenuBarToggledAction : IActionHandler
 		// changes the option, not when the setting is loaded on startup!
 		await chrome.ShowMessageDialog (
 			chrome.MainWindow,
-			Translations.GetString ("Restart Pinta"),
-			Translations.GetString ("Please restart Pinta for the changes to take effect."));
+			Translations.GetString ("Restart {0}", PintaCore.ApplicationDisplayName),
+			Translations.GetString ("Please restart {0} for the changes to take effect.", PintaCore.ApplicationDisplayName));
 	}
 }
 
